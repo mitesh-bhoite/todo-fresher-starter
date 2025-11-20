@@ -53,5 +53,25 @@ function renderTodos() {
 
     left.appendChild(checkbox);
     left.appendChild(textSpan);
+
+    const right = document.createElement("div");
+    right.className = "todo-right";
+
+    const addSubtaskBtn = document.createElement("button");
+    addSubtaskBtn.className = "subtask-btn";
+    addSubtaskBtn.textContent = "+  Subtask";
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "delete-btn";
+    deleteBtn.textContent = "Delete";
+
+    right.appendChild(addSubtaskBtn);
+    right.appendChild(deleteBtn);
+
+    li.appendChild(left);
+    li.appendChild(right);
+
+    todoList.appendChild(li);
   });
 }
+renderTodos();
