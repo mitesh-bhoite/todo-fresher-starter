@@ -181,7 +181,70 @@ function createTodoElement(todo, isSubtask) {
   return li;
 }
 
-renderTodos();
+todoList.addEventListener("dragover", (e) => {
+  e.preventDefault();
+});
+
+todoList.addEventListener("drop", (e) => {
+  if (!draggedTodoId) return;
+  const dragged = todos.find((t) => t.id === draggedTodoId);
+  if (!dragged) return;
+
+  dragged.parentId = null;
+  saveTodos();
+  renderTodos();
+});
+
+function handleDropOnTodo(targetTodo, targetIsSubtask) {
+  if (!draggedTodoId) return;
+  if (draggedTodoId === targetTodo.id) return;
+
+  const draggedTodo = todos.find((t) => t.id === draggedTodoId);
+  if (!draggedTodo) return;
+
+  if (draggedIsParent && draggedTodo.parentId === null) {
+    if (targetTodo.parentId !== null) {
+      const parent = todos.find((t) => t.id === targetTodo.parentId);
+      if (!parent) return;
+      reorderParents(draggedTodo.id, parent.id);
+    } else {
+      reorderParents(draggedTodo.id, targetTodo.id);
+    }
+    return;
+  }
+  if (!draggedIsParent) {
+    if (!targetIsSubtask) {
+      draggedTodo.parentId = targetTodo.id;
+      saveTodos();
+      renderTodos();
+    } else {
+      draggedTodo.parentId = targetTodo.parentId;
+      saveTodos();
+      renderTodos();
+    }
+  }
+}
+
+function reorderParents(draggedId, targetId) {
+  const parent = todos.filter((t) => t.parentId === null);
+  const draggedIndex = parents.findIndex((t) => t.id === draggedId);
+  const targetIndex = parents.findIndex((t) => t.id === targetId);
+  if (draggedIndex === -1 || targetIndex === -1) return;
+
+  const newParents = [...parents];
+  const [draggedParent] = newParents.splice(draggedIndex, 1);
+  newParents.splice(targetIndex, 0, draggedParent);
+
+  const newTodos = [];
+  newParents.forEach((parent) => {
+    newTodos.push(parent);
+    const subtasks = todos.filter((t) => t.parentId === parent.id);
+    newTodos.push(...subtasks);
+  });
+  todos = newTodos;
+  saveTodos();
+  renderTodos();
+}
 
 document.querySelectorAll(".filter-button").forEach((button) => {
   button.addEventListener("click", () => {
@@ -197,15 +260,5 @@ document.querySelectorAll(".filter-button").forEach((button) => {
     renderTodos();
   });
 });
-
-window.addEventListener("load", () => {
-  const hash = window.location.hash.replace("#", "");
-
-  if (hash === "all" || hash === "active" || hash === "completed") {
-    currentFilter = hash;
-  }
-  document.querySelectorAll(".filter-button").forEach((btn) => {
-    btn.classList.toggle("active", btn.dataset.filter === currentFilter);
-  });
-  renderTodos();
-});
+loadTodos();
+renderTodos();
