@@ -45,11 +45,21 @@ function renderTodos() {
 
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
-    checkbox.disabled = true;
+    checkbox.checked = todo.completed;
+
+    checkbox.addEventListener("change", function () {
+      todo.completed = checkbox.checked;
+      renderTodos();
+    });
 
     const textSpan = document.createElement("span");
     textSpan.className = "todo-text";
     textSpan.textContent = todo.text;
+
+    if (todo.completed) {
+      textSpan.style.textDecoration = "line-through";
+      textSpan.style.opacity = "0.6";
+    }
 
     left.appendChild(checkbox);
     left.appendChild(textSpan);
@@ -64,6 +74,11 @@ function renderTodos() {
     const deleteBtn = document.createElement("button");
     deleteBtn.className = "delete-btn";
     deleteBtn.textContent = "Delete";
+
+    deleteBtn.addEventListener("click", function () {
+      todos = todos.filter((t) => t.id !== todo.id);
+      renderTodos();
+    });
 
     right.appendChild(addSubtaskBtn);
     right.appendChild(deleteBtn);

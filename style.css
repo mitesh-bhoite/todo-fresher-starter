@@ -114,3 +114,7 @@ h1 {
   background-color: #000;
   color: #fff;
 }
+.todo-item.completed .todo-text {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
