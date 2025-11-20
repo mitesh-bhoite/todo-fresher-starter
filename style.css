@@ -123,3 +123,7 @@ h1 {
   border-style: dashed;
   font-size: 0.9rem;
 }
+.filter-button.active {
+  background-color: #000;
+  color: #fff;
+}

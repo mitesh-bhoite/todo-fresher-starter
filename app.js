@@ -3,6 +3,7 @@ const newTodoInput = document.getElementById("new-todo-input");
 const todoList = document.getElementById("todo-list");
 
 let todos = [];
+let currentFilter = "all";
 
 newTodoInput.addEventListener("keydown", function (event) {
   if (event.key === "Enter") {
@@ -32,13 +33,25 @@ function addTodo(text, parentId = null) {
 function renderTodos() {
   todoList.innerHTML = "";
 
-  const topLevelTodos = todos.filter((t) => t.parentId === null);
+  const topLevelTodos = todos.filter((t) => {
+    if (t.parentId !== null) return false;
+
+    if (currentFilter === "active") return !t.completed;
+    if (currentFilter === "completed") return t.completed;
+    return true;
+  });
 
   topLevelTodos.forEach((parent) => {
     const parentLi = createTodoElement(parent, false);
     todoList.appendChild(parentLi);
 
-    const subtasks = todos.filter((t) => t.parentId === parent.id);
+    const subtasks = todos.filter((t) => {
+      if (t.parentId !== parent.id) return false;
+
+      if (currentFilter === "active") return !t.completed;
+      if (currentFilter === "completed") return t.completed;
+      return true;
+    });
 
     subtasks.forEach((sub) => {
       const subLi = createTodoElement(sub, true);
@@ -46,6 +59,33 @@ function renderTodos() {
     });
   });
 }
+
+document.querySelectorAll(".filter-button").forEach((button) => {
+  button.addEventListener("click", () => {
+    currentFilter = button.dataset.filter;
+
+    window.location.hash = currentFilter;
+
+    document
+      .querySelectorAll(".filter-button")
+      .forEach((btn) => btn.classList.remove("active"));
+
+    button.classList.add("active");
+    renderTodos();
+  });
+});
+
+window.addEventListener("load", () => {
+  const hash = window.location.hash.replace("#", "");
+
+  if (hash === "all" || hash === "active" || hash === "completed") {
+    currentFilter = hash;
+    document.querySelectorAll(".filter-button").forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.filter === currentFilter);
+    });
+  }
+  renderTodos();
+});
 
 function createTodoElement(todo, isSubtask) {
   const li = document.createElement("li");
