@@ -1,95 +1,149 @@
-//Get HTML elements
+// Get HTML elements
 const newTodoInput = document.getElementById("new-todo-input");
 const todoList = document.getElementById("todo-list");
-let todos = []; // This array store all our todos.
 
-//Add todo when user presses Enter
+// This array stores all our todos
+let todos = []; // each todo: { id, text, completed, parentId }
 
+// -----------------------------
+// Add todo when user presses Enter
+// -----------------------------
 newTodoInput.addEventListener("keydown", function (event) {
   if (event.key === "Enter") {
-    const text = newTodoInput.value.trim(); //remove extra spaces
+    const text = newTodoInput.value.trim(); // remove extra spaces
 
     if (text === "") {
       return;
     }
 
+    // top-level todo, so parentId = null
     addTodo(text);
     newTodoInput.value = "";
   }
 });
 
-//stores text(todos) in the array
-function addTodo(text) {
+// -----------------------------
+// Create and store new todo
+// -----------------------------
+function addTodo(text, parentId = null) {
   const todo = {
     id: Date.now().toString(),
     text: text,
     completed: false,
-    parentId: null,
+    parentId: parentId, // null = top-level, otherwise parent todo's id
   };
 
   todos.push(todo);
   renderTodos();
 }
 
+// -----------------------------
+// Render all todos (parents + subtasks)
+// -----------------------------
 function renderTodos() {
+  // clear the list
   todoList.innerHTML = "";
+
+  // 1) get all top-level todos
   const topLevelTodos = todos.filter((t) => t.parentId === null);
 
-  topLevelTodos.forEach((todo) => {
-    const li = document.createElement("li");
-    li.className = "todo-item";
-    li.dataset.id = todo.id;
+  topLevelTodos.forEach((parent) => {
+    // render parent row
+    const parentLi = createTodoElement(parent, false);
+    todoList.appendChild(parentLi);
 
-    const left = document.createElement("div");
-    left.className = "todo-left";
+    // 2) get its subtasks
+    const subtasks = todos.filter((t) => t.parentId === parent.id);
 
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.checked = todo.completed;
-
-    checkbox.addEventListener("change", function () {
-      todo.completed = checkbox.checked;
-      renderTodos();
+    subtasks.forEach((sub) => {
+      const subLi = createTodoElement(sub, true);
+      todoList.appendChild(subLi);
     });
+  });
+}
 
-    const textSpan = document.createElement("span");
-    textSpan.className = "todo-text";
-    textSpan.textContent = todo.text;
+// -----------------------------
+// Create a single <li> element
+// -----------------------------
+function createTodoElement(todo, isSubtask) {
+  const li = document.createElement("li");
+  li.className = "todo-item";
+  li.dataset.id = todo.id;
 
-    if (todo.completed) {
-      textSpan.style.textDecoration = "line-through";
-      textSpan.style.opacity = "0.6";
-    } else {
-      textSpan.style.textDecoration = "none";
-      textSpan.style.opacity = "1";
-    }
+  if (isSubtask) {
+    li.classList.add("subtask");
+  }
 
-    left.appendChild(checkbox);
-    left.appendChild(textSpan);
+  // -------- LEFT: checkbox + text --------
+  const left = document.createElement("div");
+  left.className = "todo-left";
 
-    const right = document.createElement("div");
-    right.className = "todo-right";
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.checked = todo.completed;
 
+  checkbox.addEventListener("change", function () {
+    todo.completed = checkbox.checked;
+    renderTodos();
+  });
+
+  const textSpan = document.createElement("span");
+  textSpan.className = "todo-text";
+  textSpan.textContent = todo.text;
+
+  if (todo.completed) {
+    textSpan.style.textDecoration = "line-through";
+    textSpan.style.opacity = "0.6";
+  } else {
+    textSpan.style.textDecoration = "none";
+    textSpan.style.opacity = "1";
+  }
+
+  left.appendChild(checkbox);
+  left.appendChild(textSpan);
+
+  // -------- RIGHT: buttons --------
+  const right = document.createElement("div");
+  right.className = "todo-right";
+
+  // Only parents get "+ Subtask" (1-level nesting only)
+  if (!isSubtask) {
     const addSubtaskBtn = document.createElement("button");
     addSubtaskBtn.className = "subtask-btn";
-    addSubtaskBtn.textContent = "+  Subtask";
+    addSubtaskBtn.textContent = "+ Subtask";
 
-    const deleteBtn = document.createElement("button");
-    deleteBtn.className = "delete-btn";
-    deleteBtn.textContent = "Delete";
+    addSubtaskBtn.addEventListener("click", function () {
+      const subtaskText = prompt("Enter Subtask:");
+      if (!subtaskText) return;
 
-    deleteBtn.addEventListener("click", function () {
-      todos = todos.filter((t) => t.id !== todo.id);
-      renderTodos();
+      addTodo(subtaskText.trim(), todo.id); // parentId = this todo's id
     });
 
     right.appendChild(addSubtaskBtn);
-    right.appendChild(deleteBtn);
+  }
 
-    li.appendChild(left);
-    li.appendChild(right);
+  const deleteBtn = document.createElement("button");
+  deleteBtn.className = "delete-btn";
+  deleteBtn.textContent = "Delete";
 
-    todoList.appendChild(li);
+  deleteBtn.addEventListener("click", function () {
+    if (isSubtask) {
+      // delete only this subtask
+      todos = todos.filter((t) => t.id !== todo.id);
+    } else {
+      // delete this parent AND its subtasks
+      todos = todos.filter((t) => t.id !== todo.id && t.parentId !== todo.id);
+    }
+    renderTodos();
   });
+
+  right.appendChild(deleteBtn);
+
+  li.appendChild(left);
+  li.appendChild(right);
+
+  return li;
 }
+
+// initial render
 renderTodos();

@@ -118,3 +118,8 @@ h1 {
   text-decoration: line-through;
   opacity: 0.6;
 }
+.todo-item.subtask {
+  margin-left: 20px;
+  border-style: dashed;
+  font-size: 0.9rem;
+}
