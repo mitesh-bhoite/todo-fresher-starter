@@ -1,7 +1,7 @@
 //Get HTML elements
 const newTodoInput = document.getElementById("new-todo-input");
 const todoList = document.getElementById("todo-list");
-const todos = []; // This array store all our todos.
+let todos = []; // This array store all our todos.
 
 //Add todo when user presses Enter
 
@@ -59,6 +59,9 @@ function renderTodos() {
     if (todo.completed) {
       textSpan.style.textDecoration = "line-through";
       textSpan.style.opacity = "0.6";
+    } else {
+      textSpan.style.textDecoration = "none";
+      textSpan.style.opacity = "1";
     }
 
     left.appendChild(checkbox);
