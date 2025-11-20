@@ -7,23 +7,26 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="container">
-      <h1>Todo List</h1>
-
+    <div class="app">
+      <header class="app-header">
+        <h1>Todo List</h1>
+        <p class="subtitle">Your Personal Task Management Solution</p>
+      </header>
       <!-- Add todo -->
-      <input
-        id="new-todo-input"
-        type="text"
-        placeholder="What needs to be done?"
-        autofocus
-      />
-
+      <section class="todo-input-section">
+        <input
+          id="new-todo-input"
+          type="text"
+          placeholder="What needs to be done?"
+          autofocus
+        />
+      </section>
       <!-- Filter tabs -->
       <nav class="filters">
-        <button data-filter="all" class="filters-button active">#all</button>
-        <button data-filter="active" class="filters-button">#active</button>
+        <button data-filter="all" class="filters-button active">All</button>
+        <button data-filter="active" class="filters-button">Active</button>
         <button data-filter="completed" class="filters-button">
-          #completed
+          Completed
         </button>
       </nav>
 
