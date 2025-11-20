@@ -17,3 +17,16 @@ newTodoInput.addEventListener("keydown", function (event) {
     newTodoInput.value = "";
   }
 });
+
+//stores text(todos) in the array
+function addTodo(text) {
+  const todo = {
+    id: Date.now().toString(),
+    text: text,
+    completed: false,
+    parentId: null,
+  };
+
+  todos.push(todo);
+  renderTodos();
+}
