@@ -30,3 +30,28 @@ function addTodo(text) {
   todos.push(todo);
   renderTodos();
 }
+
+function renderTodos() {
+  todoList.innerHTML = "";
+  const topLevelTodos = todos.filter((t) => t.parentId === null);
+
+  topLevelTodos.forEach((todo) => {
+    const li = document.createElement("li");
+    li.className = "todo-item";
+    li.dataset.id = todo.id;
+
+    const left = document.createElement("div");
+    left.className = "todo-left";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.disabled = true;
+
+    const textSpan = document.createElement("span");
+    textSpan.className = "todo-text";
+    textSpan.textContent = todo.text;
+
+    left.appendChild(checkbox);
+    left.appendChild(textSpan);
+  });
+}
