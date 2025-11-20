@@ -2,12 +2,8 @@
 const newTodoInput = document.getElementById("new-todo-input");
 const todoList = document.getElementById("todo-list");
 
-// This array stores all our todos
-let todos = []; // each todo: { id, text, completed, parentId }
+let todos = [];
 
-// -----------------------------
-// Add todo when user presses Enter
-// -----------------------------
 newTodoInput.addEventListener("keydown", function (event) {
   if (event.key === "Enter") {
     const text = newTodoInput.value.trim(); // remove extra spaces
@@ -16,15 +12,11 @@ newTodoInput.addEventListener("keydown", function (event) {
       return;
     }
 
-    // top-level todo, so parentId = null
     addTodo(text);
     newTodoInput.value = "";
   }
 });
 
-// -----------------------------
-// Create and store new todo
-// -----------------------------
 function addTodo(text, parentId = null) {
   const todo = {
     id: Date.now().toString(),
@@ -37,22 +29,15 @@ function addTodo(text, parentId = null) {
   renderTodos();
 }
 
-// -----------------------------
-// Render all todos (parents + subtasks)
-// -----------------------------
 function renderTodos() {
-  // clear the list
   todoList.innerHTML = "";
 
-  // 1) get all top-level todos
   const topLevelTodos = todos.filter((t) => t.parentId === null);
 
   topLevelTodos.forEach((parent) => {
-    // render parent row
     const parentLi = createTodoElement(parent, false);
     todoList.appendChild(parentLi);
 
-    // 2) get its subtasks
     const subtasks = todos.filter((t) => t.parentId === parent.id);
 
     subtasks.forEach((sub) => {
@@ -62,9 +47,6 @@ function renderTodos() {
   });
 }
 
-// -----------------------------
-// Create a single <li> element
-// -----------------------------
 function createTodoElement(todo, isSubtask) {
   const li = document.createElement("li");
   li.className = "todo-item";
@@ -74,7 +56,6 @@ function createTodoElement(todo, isSubtask) {
     li.classList.add("subtask");
   }
 
-  // -------- LEFT: checkbox + text --------
   const left = document.createElement("div");
   left.className = "todo-left";
 
@@ -102,11 +83,9 @@ function createTodoElement(todo, isSubtask) {
   left.appendChild(checkbox);
   left.appendChild(textSpan);
 
-  // -------- RIGHT: buttons --------
   const right = document.createElement("div");
   right.className = "todo-right";
 
-  // Only parents get "+ Subtask" (1-level nesting only)
   if (!isSubtask) {
     const addSubtaskBtn = document.createElement("button");
     addSubtaskBtn.className = "subtask-btn";
@@ -128,10 +107,8 @@ function createTodoElement(todo, isSubtask) {
 
   deleteBtn.addEventListener("click", function () {
     if (isSubtask) {
-      // delete only this subtask
       todos = todos.filter((t) => t.id !== todo.id);
     } else {
-      // delete this parent AND its subtasks
       todos = todos.filter((t) => t.id !== todo.id && t.parentId !== todo.id);
     }
     renderTodos();
@@ -145,5 +122,4 @@ function createTodoElement(todo, isSubtask) {
   return li;
 }
 
-// initial render
 renderTodos();
