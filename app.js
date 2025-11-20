@@ -5,6 +5,26 @@ const todoList = document.getElementById("todo-list");
 let todos = [];
 let currentFilter = "all";
 
+const STORAGE_KEY = "nested_todos_v1";
+
+let draggedTodoId = null;
+let draggedIsParent = false;
+
+function saveTodos() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+}
+
+function loadTodos() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return;
+  try {
+    todos = JSON.parse(raw);
+  } catch (e) {
+    console.error("ERROR paring todos from storage", e);
+    todos = [];
+  }
+}
+
 newTodoInput.addEventListener("keydown", function (event) {
   if (event.key === "Enter") {
     const text = newTodoInput.value.trim(); // remove extra spaces
@@ -23,10 +43,11 @@ function addTodo(text, parentId = null) {
     id: Date.now().toString(),
     text: text,
     completed: false,
-    parentId: parentId, // null = top-level, otherwise parent todo's id
+    parentId: parentId,
   };
 
   todos.push(todo);
+  saveTodos();
   renderTodos();
 }
 
@@ -60,33 +81,6 @@ function renderTodos() {
   });
 }
 
-document.querySelectorAll(".filter-button").forEach((button) => {
-  button.addEventListener("click", () => {
-    currentFilter = button.dataset.filter;
-
-    window.location.hash = currentFilter;
-
-    document
-      .querySelectorAll(".filter-button")
-      .forEach((btn) => btn.classList.remove("active"));
-
-    button.classList.add("active");
-    renderTodos();
-  });
-});
-
-window.addEventListener("load", () => {
-  const hash = window.location.hash.replace("#", "");
-
-  if (hash === "all" || hash === "active" || hash === "completed") {
-    currentFilter = hash;
-    document.querySelectorAll(".filter-button").forEach((btn) => {
-      btn.classList.toggle("active", btn.dataset.filter === currentFilter);
-    });
-  }
-  renderTodos();
-});
-
 function createTodoElement(todo, isSubtask) {
   const li = document.createElement("li");
   li.className = "todo-item";
@@ -95,6 +89,29 @@ function createTodoElement(todo, isSubtask) {
   if (isSubtask) {
     li.classList.add("subtask");
   }
+
+  li.draggable = true;
+
+  li.addEventListener("dragstart", () => {
+    draggedTodoId = todo.id;
+    draggedIsParent = !isSubtask;
+    li.classList.add("dragging");
+  });
+
+  li.addEventListener("dragend", () => {
+    li.classList.remove("dragging");
+    draggedTodoId = null;
+    draggedIsParent = false;
+  });
+
+  li.addEventListener("dragover", (e) => {
+    e.preventDefault();
+  });
+
+  li.addEventListener("drop", (e) => {
+    e.preventDefault();
+    handleDropOnTodo(todo, isSubtask);
+  });
 
   const left = document.createElement("div");
   left.className = "todo-left";
@@ -105,6 +122,7 @@ function createTodoElement(todo, isSubtask) {
 
   checkbox.addEventListener("change", function () {
     todo.completed = checkbox.checked;
+    saveTodos();
     renderTodos();
   });
 
@@ -151,6 +169,7 @@ function createTodoElement(todo, isSubtask) {
     } else {
       todos = todos.filter((t) => t.id !== todo.id && t.parentId !== todo.id);
     }
+    saveTodos();
     renderTodos();
   });
 
@@ -163,3 +182,30 @@ function createTodoElement(todo, isSubtask) {
 }
 
 renderTodos();
+
+document.querySelectorAll(".filter-button").forEach((button) => {
+  button.addEventListener("click", () => {
+    currentFilter = button.dataset.filter;
+
+    window.location.hash = currentFilter;
+
+    document
+      .querySelectorAll(".filter-button")
+      .forEach((btn) => btn.classList.remove("active"));
+
+    button.classList.add("active");
+    renderTodos();
+  });
+});
+
+window.addEventListener("load", () => {
+  const hash = window.location.hash.replace("#", "");
+
+  if (hash === "all" || hash === "active" || hash === "completed") {
+    currentFilter = hash;
+  }
+  document.querySelectorAll(".filter-button").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.filter === currentFilter);
+  });
+  renderTodos();
+});
