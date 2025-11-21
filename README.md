@@ -30,6 +30,6 @@ The UI is clean and built in **black and white theme**.
     | Storage    | 'localStorage' (Browser storage) |
     | Deployment | Netlify / GitHub Pages           |
 
-## Live Demo
+## > Live Demo
 
 (https://task-tree.netlify.app/)
