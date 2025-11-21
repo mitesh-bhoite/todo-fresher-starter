@@ -1,14 +1,14 @@
 let todos = [];
 let currentFilter = "all";
 
-// Load todos from storage when page loads
+// load todos from storage when page loads
 function loadTodos() {
   const saved = localStorage.getItem("todos");
   if (saved) {
     todos = JSON.parse(saved);
   }
 
-  // Check URL hash for filter
+  // check URL hash for filter
   const hash = window.location.hash.slice(1);
   if (hash) {
     currentFilter = hash;
@@ -18,12 +18,12 @@ function loadTodos() {
   renderTodos();
 }
 
-// Save todos to storage
+// save todos to storage
 function saveTodos() {
   localStorage.setItem("todos", JSON.stringify(todos));
 }
 
-// Add a new todo
+//  add a new todo
 function addTodo(text, parentId = null) {
   const newTodo = {
     id: Date.now(),
@@ -34,13 +34,13 @@ function addTodo(text, parentId = null) {
   };
 
   if (parentId) {
-    // Add as subtask
+    // add as subtask
     const parent = todos.find((t) => t.id === parentId);
     if (parent) {
       parent.subtasks.push(newTodo);
     }
   } else {
-    // Add as main todo
+    // add as main todo
     todos.push(newTodo);
   }
 
@@ -48,7 +48,7 @@ function addTodo(text, parentId = null) {
   renderTodos();
 }
 
-// Delete a todo
+//delete a todo
 function deleteTodo(id, parentId = null) {
   if (parentId) {
     // Delete subtask
@@ -65,7 +65,7 @@ function deleteTodo(id, parentId = null) {
   renderTodos();
 }
 
-// Toggle todo completion
+//toggle todo completion
 function toggleComplete(id, parentId = null) {
   if (parentId) {
     const parent = todos.find((t) => t.id === parentId);
@@ -86,7 +86,7 @@ function toggleComplete(id, parentId = null) {
   renderTodos();
 }
 
-// Filter todos based on current filter
+//filter todos based on current filter
 function filterTodos() {
   if (currentFilter === "active") {
     return todos.filter((t) => !t.completed);
@@ -96,7 +96,7 @@ function filterTodos() {
   return todos;
 }
 
-// Render all todos
+// render all todos
 function renderTodos() {
   const list = document.getElementById("todoList");
   list.innerHTML = "";
@@ -109,7 +109,7 @@ function renderTodos() {
   });
 }
 
-// Create a todo element
+// create a todo element
 function createTodoElement(todo) {
   const li = document.createElement("li");
   li.className = "todo-item";
@@ -151,7 +151,7 @@ function createTodoElement(todo) {
 
   li.appendChild(content);
 
-  // Add subtasks
+  // add subtasks
   if (todo.subtasks.length > 0) {
     const subtaskContainer = document.createElement("div");
     subtaskContainer.className = "subtasks";
@@ -164,7 +164,7 @@ function createTodoElement(todo) {
     li.appendChild(subtaskContainer);
   }
 
-  // Drag and drop handlers
+  // drag and drop handlers
   li.addEventListener("dragstart", handleDragStart);
   li.addEventListener("dragover", handleDragOver);
   li.addEventListener("drop", handleDrop);
@@ -173,7 +173,7 @@ function createTodoElement(todo) {
   return li;
 }
 
-// Create subtask element
+//create subtask element
 function createSubtaskElement(subtask, parentId) {
   const div = document.createElement("div");
   div.className = "subtask";
@@ -205,7 +205,7 @@ function createSubtaskElement(subtask, parentId) {
 
   div.appendChild(content);
 
-  // Drag handlers for subtasks
+  // drag handlers for subtasks
   div.addEventListener("dragstart", handleDragStart);
   div.addEventListener("dragover", handleDragOver);
   div.addEventListener("drop", handleDrop);
@@ -214,11 +214,11 @@ function createSubtaskElement(subtask, parentId) {
   return div;
 }
 
-// Show input for adding subtask
+// show input for adding subtask
 function showSubtaskInput(parentId) {
   const parent = document.querySelector(`[data-id="${parentId}"]`);
 
-  // Remove existing input if any
+  // to remove existing input
   const existing = parent.querySelector(".subtask-input");
   if (existing) {
     existing.remove();
@@ -241,7 +241,7 @@ function showSubtaskInput(parentId) {
   input.focus();
 }
 
-// Drag and drop variables
+// drag and drop variables
 let draggedElement = null;
 
 function handleDragStart(e) {
@@ -271,7 +271,7 @@ function handleDrop(e) {
   const draggedId = parseInt(draggedElement.dataset.id);
   const targetId = parseInt(target.dataset.id);
 
-  // Reorder todos
+  //reorder todos
   const draggedIndex = todos.findIndex((t) => t.id === draggedId);
   const targetIndex = todos.findIndex((t) => t.id === targetId);
 
@@ -291,7 +291,7 @@ function handleDragEnd(e) {
   });
 }
 
-// Filter button handlers
+// filter button handlers
 function updateFilterButtons() {
   document.querySelectorAll(".filter-btn").forEach((btn) => {
     btn.classList.remove("active");
@@ -318,7 +318,6 @@ document.getElementById("todoInput").addEventListener("keypress", (e) => {
   }
 });
 
-// Listen for hash changes
 window.addEventListener("hashchange", () => {
   const hash = window.location.hash.slice(1);
   if (hash) {
@@ -327,6 +326,5 @@ window.addEventListener("hashchange", () => {
     renderTodos();
   }
 });
-
-// Load todos when page loads
+//load todos
 loadTodos();
