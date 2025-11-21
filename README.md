@@ -30,6 +30,19 @@ The UI is clean and built in **black and white theme**.
     | Storage    | 'localStorage' (Browser storage) |
     | Deployment | Netlify / GitHub Pages           |
 
+## > Challenges
+
+    -Implementing drag & drop was challenging, especially keeping subtasks attached to parents and updating order correctly.
+
+    --
+
+## > Future Improvements
+
+    -Better drag & drop UI with drop indicators
+    -Multi-level subtasks
+
+    --
+
 ## > Live Demo
 
 (https://task-tree.netlify.app/)
