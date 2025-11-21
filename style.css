@@ -6,11 +6,21 @@
 
 body {
   font-family: Arial, sans-serif;
-  background: white;
+  background: rgb(112, 106, 106);
   color: black;
   padding: 20px;
   max-width: 600px;
-  margin: 0 auto;
+  margin: auto;
+}
+
+.container {
+  width: 90%;
+  max-width: 800px;
+  background-color: white;
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: #a39e9e;
+  margin: 30px;
 }
 
 h1 {
@@ -21,7 +31,7 @@ h1 {
 
 .subtitle {
   font-size: 0.9rem;
-  color: #444;
+  color: #242222;
   margin-bottom: 16px;
   text-align: center;
 }
@@ -36,6 +46,7 @@ h1 {
   font-size: 16px;
   border: 2px solid black;
   outline: none;
+  border-radius: 8px;
 }
 
 .filters {
@@ -52,6 +63,7 @@ h1 {
   border: 2px solid black;
   cursor: pointer;
   font-size: 14px;
+  border-radius: 8px;
 }
 
 .filter-btn.active {
@@ -69,6 +81,7 @@ h1 {
   margin-bottom: 10px;
   background: white;
   cursor: move;
+  border-radius: 5px;
 }
 
 .todo-item.dragging {
@@ -113,6 +126,7 @@ h1 {
   background: white;
   cursor: pointer;
   font-size: 12px;
+  border-radius: 8px;
 }
 
 .btn:hover {
@@ -126,6 +140,7 @@ h1 {
   border: 1px solid black;
   font-size: 14px;
   margin-top: 8px;
+  border-radius: 5px;
 }
 
 .subtasks {
@@ -138,6 +153,7 @@ h1 {
   padding: 10px;
   margin-bottom: 8px;
   background: white;
+  border-radius: 5px;
 }
 
 @media (max-width: 600px) {
