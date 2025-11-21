@@ -32,4 +32,4 @@ The UI is clean and built in **black and white theme**.
 
 ## Live Demo
 
-    - https://task-tree.netlify.app/
+    https://task-tree.netlify.app/
